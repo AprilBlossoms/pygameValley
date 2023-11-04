@@ -7,4 +7,4 @@ The assets for this game are hidden, because I bought them or got permission to 
 I'm making the game code available for anyone who wants to take a look at the code without sitting through hours of my youtube videos. It will be updated frequently. Ideally daily, as I'm working through the #100DaysOfCode challenge, but, well if you're on my github you've seen how well I've done with that in the past (not at all).
 The updates will range from pretty big additions to minor changes, depending on the part of the game I'm working on. 
 
-*If there's something you'd like to see implemented, or if you have any questions about the code, or just want to chat, you can reach me here, on [Youtube](youtube.com/@aprilmaycodes), and [Twitter/X](twitter.com/AprilMayCodes)*
+*If there's something you'd like to see implemented, or if you have any questions about the code, or just want to chat, you can reach me here, on [Youtube](http://www.youtube.com/@aprilmaycodes), and [Twitter/X](http://www.twitter.com/AprilMayCodes)*
