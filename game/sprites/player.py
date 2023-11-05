@@ -1,6 +1,7 @@
 import pygame
 
 from game import config
+from game.states.pause.inventory import Inventory
 from game.support import Tilesheet, Timer
 
 
@@ -124,7 +125,7 @@ class Player(pygame.sprite.Sprite):
                             self.water_tiles.get_tile(6, 3), self.water_tiles.get_tile(7, 3)]
 
         }
-
+        self.display_inventory = False
         self.frame_index = 0
         self.status = "down_idle"
 
@@ -138,12 +139,14 @@ class Player(pygame.sprite.Sprite):
         self.timers = {
             'tool use': Timer(350, self.use_tool),
             'seed use': Timer(350, self.use_seed),
-            'switch item': Timer(200)
+            'switch item': Timer(200),
+            'inventory': Timer(200)
         }
         self.selected_hotbar = 1
         self.tools = ['hoe', 'axe', 'water', 'pickaxe']
         self.tool_index = 0
         self.selected_tool = self.tools[self.tool_index]
+        self.inventory = Inventory(self, self.game)
 
     def use_tool(self):
         if self.selected_tool == 'axe':
@@ -163,56 +166,67 @@ class Player(pygame.sprite.Sprite):
 
     def input(self, actions):
         if not self.timers['tool use'].active and not self.timers['seed use'].active:
-            if actions['move up']:
-                self.status = 'up'
-                self.direction.y = -1
-            elif actions['move down']:
-                self.status = 'down'
-                self.direction.y = 1
-            else:
-                self.direction.y = 0
+            if actions['inventory'] and not self.timers['inventory'].active:
+                self.timers['inventory'].activate()
+                if not self.display_inventory:
+                    self.display_inventory = True
+                else:
+                    self.display_inventory = False
+            if not self.display_inventory:
+                if actions['move up']:
+                    self.status = 'up'
+                    self.direction.y = -1
+                elif actions['move down']:
+                    self.status = 'down'
+                    self.direction.y = 1
+                else:
+                    self.direction.y = 0
 
-            if actions['move left']:
-                self.status = 'left'
-                self.direction.x = -1
-            elif actions['move right']:
-                self.status = 'right'
-                self.direction.x = 1
-            else:
-                self.direction.x = 0
+                if actions['move left']:
+                    self.status = 'left'
+                    self.direction.x = -1
+                elif actions['move right']:
+                    self.status = 'right'
+                    self.direction.x = 1
+                else:
+                    self.direction.x = 0
 
-            if actions['hotbar left'] and not self.timers['switch item'].active:
-                self.timers['switch item'].activate()
-                self.selected_hotbar -= 1
-                if self.selected_hotbar == 0:
-                    self.selected_hotbar = 9
+                if actions['hotbar left'] and not self.timers['switch item'].active:
+                    self.timers['switch item'].activate()
+                    self.selected_hotbar -= 1
+                    if self.selected_hotbar == 0:
+                        self.selected_hotbar = 9
 
-            if actions['hotbar right'] and not self.timers['switch item'].active:
-                self.timers['switch item'].activate()
-                self.selected_hotbar += 1
-                if self.selected_hotbar == 10:
-                    self.selected_hotbar = 1
+                if actions['hotbar right'] and not self.timers['switch item'].active:
+                    self.timers['switch item'].activate()
+                    self.selected_hotbar += 1
+                    if self.selected_hotbar == 10:
+                        self.selected_hotbar = 1
 
-            if actions['enter']:
-                if self.selected_hotbar == 1:
-                    self.timers['tool use'].activate()
-                    self.direction = pygame.math.Vector2()
-                    self.frame_index = 0
+                if actions['enter']:
+                    if self.selected_hotbar == 1:
+                        self.timers['tool use'].activate()
+                        self.direction = pygame.math.Vector2()
+                        self.frame_index = 0
 
-            if actions['left'] and not self.timers['switch item'].active:
-                self.timers['switch item'].activate()
-                self.tool_index -= 1
-                if self.tool_index < 0:
-                    self.tool_index = len(self.tools) - 1
-                self.selected_tool = self.tools[self.tool_index]
+                if actions['left'] and not self.timers['switch item'].active:
+                    self.timers['switch item'].activate()
+                    self.tool_index -= 1
+                    if self.tool_index < 0:
+                        self.tool_index = len(self.tools) - 1
+                    self.selected_tool = self.tools[self.tool_index]
 
-            if actions['right'] and not self.timers['switch item'].active:
-                self.timers['switch item'].activate()
-                self.tool_index += 1
-                if self.tool_index > len(self.tools) - 1:
-                    self.tool_index = 0
-                self.selected_tool = self.tools[self.tool_index]
+                if actions['right'] and not self.timers['switch item'].active:
+                    self.timers['switch item'].activate()
+                    self.tool_index += 1
+                    if self.tool_index > len(self.tools) - 1:
+                        self.tool_index = 0
+                    self.selected_tool = self.tools[self.tool_index]
 
+    def toggle_inventory(self):
+        if self.display_inventory:
+            self.inventory.render(self.game.game_manager.screen)
+            self.inventory.update(self.game.game_manager.dt, self.game.game_manager.actions)
     def get_status(self):
         if self.direction.magnitude() == 0:
             self.status = self.status.split('_')[0] + "_idle"
@@ -259,8 +273,10 @@ class Player(pygame.sprite.Sprite):
 
     def get_target_pos(self):
         self.target_pos = self.rect.center + config.PLAYER_TOOL_OFFSET[self.status.split('_')[0]]
+
     def update(self, dt):
         self.input(self.game.game_manager.actions)
+        self.toggle_inventory()
         self.get_status()
         self.update_timers()
         self.get_target_pos()

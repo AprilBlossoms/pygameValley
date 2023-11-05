@@ -31,13 +31,13 @@ class Hotbar:
         self.hotbar9 = self.selector_image.get_rect(
             topleft=(self.hotbar8.topright[0] + 4, self.hotbar1.topright[1]))
 
-        hoe = InventoryItem("hoe", "tools", "assets/overlay/hoe.png")
+        hoe = InventoryItem("hoe", "tools", pygame.image.load("assets/overlay/hoe.png"))
         hoe.img = pygame.transform.scale(hoe.img, (42, 42))
-        water = InventoryItem("water", "tools", "assets/overlay/water.png")
+        water = InventoryItem("water", "tools", pygame.image.load("assets/overlay/water.png"))
         water.img = pygame.transform.scale(water.img, (42, 42))
-        axe = InventoryItem("axe", "tools", "assets/overlay/axe.png")
+        axe = InventoryItem("axe", "tools", pygame.image.load("assets/overlay/axe.png"))
         axe.img = pygame.transform.scale(axe.img, (42, 42))
-        pickaxe = InventoryItem("pickaxe", "tools", "assets/overlay/pickaxe.png")
+        pickaxe = InventoryItem("pickaxe", "tools", pygame.image.load("assets/overlay/pickaxe.png"))
         pickaxe.img = pygame.transform.scale(pickaxe.img, (42, 42))
 
         self.tools = {

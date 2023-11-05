@@ -65,14 +65,16 @@ class Farm(State):
                     pos=(obj.x * 3, obj.y * 3),
                     surf=pygame.transform.scale(obj.image, (96, 96)),
                     groups=[self.all_sprites, self.collision_sprites, self.tree_sprites],
-                    name=obj.name
+                    name=obj.name,
+                    player_add=self.game_manager.game.player_add
                 )
             else:
                 Stump(
                     pos=(obj.x*3, obj.y*3),
                     surf=pygame.transform.scale(obj.image, (160, 64)),
                     groups=[self.all_sprites, self.collision_sprites, self.tree_sprites],
-                    name=obj.name
+                    name=obj.name,
+                    player_add=self.game_manager.game.player_add
                 )
 
         for obj in map_data.get_layer_by_name("Decorations"):

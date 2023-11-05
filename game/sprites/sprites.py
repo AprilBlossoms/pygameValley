@@ -1,5 +1,6 @@
 import pygame
 from game import config
+from game.support import Tilesheet
 
 
 class Generic(pygame.sprite.Sprite):
@@ -28,10 +29,12 @@ class Water(Generic):
 
 
 class Tree(Generic):
-    def __init__(self, pos, surf, groups, name):
+    def __init__(self, pos, surf, groups, name, player_add):
         super().__init__(pos, surf, groups, z=config.FARM_LAYERS['house top'])
         self.name = name
+        self.player_add = player_add
         self.alive = True
+        self.inv_tiles = Tilesheet("assets/pause/items.png", 16, 16, 12, 10)
         if self.name == 'Small':
             self.health = 4
             stump_path = "assets/stumps/small.png"
@@ -53,6 +56,12 @@ class Tree(Generic):
             self.rect = self.image.get_rect(midbottom=self.rect.midbottom)
             self.hitbox = self.rect.copy().inflate((-10, -self.rect.height * 0.6))
             self.alive = False
+            if self.name == 'Small':
+                self.player_add('materials', 'wood', pygame.transform.scale(self.inv_tiles.get_tile(0, 7), (48, 48)), 2)
+            if self.name == 'Medium':
+                self.player_add('materials', 'wood', pygame.transform.scale(self.inv_tiles.get_tile(0, 7), (48, 48)), 3)
+            if self.name == 'Large':
+                self.player_add('materials', 'wood', pygame.transform.scale(self.inv_tiles.get_tile(0, 7), (48, 48)), 4)
 
     def update(self, dt):
         if self.alive:
@@ -80,11 +89,13 @@ class Farmable(Generic):
 
 
 class Stump(Generic):
-    def __init__(self, pos, surf, groups, name):
+    def __init__(self, pos, surf, groups, name, player_add):
         super().__init__(pos, surf, groups, z=config.FARM_LAYERS['house top'])
         self.name = name
+        self.player_add = player_add
         self.alive = True
         self.health = 8
+        self.inv_tiles = Tilesheet("assets/pause/items.png", 16, 16, 12, 10)
 
     def damage(self):
         self.health -= 1
@@ -93,6 +104,7 @@ class Stump(Generic):
         if self.health <= 0:
             self.alive = False
             self.kill()
+            self.player_add('materials', 'wood', pygame.transform.scale(self.inv_tiles.get_tile(0, 7), (48, 48)), 5)
 
     def update(self, dt):
         if self.alive:
