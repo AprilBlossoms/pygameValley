@@ -1,5 +1,6 @@
 import pygame
 
+from game import config
 from game.overlay.hotbar import Hotbar
 
 
@@ -11,8 +12,14 @@ class Overlay:
     def display(self, surface):
         surface.blit(self.hotbar.hotbar_image, self.hotbar.hotbar_rect)
         for i in range(1, 10):
+            if i != 1:
+                if self.player.inventory.slots['hotbar'][str(i)]['item']:
+                    self.hotbar.slots[str(i)]['item'] = self.player.inventory.slots['hotbar'][str(i)]['item']
+                    self.hotbar.slots[str(i)]['amount'] = self.player.inventory.slots['hotbar'][str(i)]['amount']
             if self.hotbar.slots[str(i)]['item']:
                 surface.blit(self.hotbar.slots[str(i)]['item'].img, self.hotbar.slots[str(i)]['rect'])
+                if i != 1:
+                    self.player.game.game_manager.draw_text(surface, str(self.hotbar.slots[str(i)]['amount']), 30, config.BLACK, self.hotbar.slots[str(i)]['rect'].bottomright[0]-10, self.hotbar.slots[str(i)]['rect'].bottomright[1]-15)
         if self.player.selected_hotbar == 1:
             surface.blit(self.hotbar.selector_image, self.hotbar.hotbar1)
         if self.player.selected_hotbar == 2:

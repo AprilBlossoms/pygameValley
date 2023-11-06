@@ -2,12 +2,16 @@ import pygame
 
 from game import config
 from game.states.pause.inventory_item import InventoryItem
+from game.support import Tilesheet
 
 
 class Inventory:
     def __init__(self, player, game):
         self.player = player
         self.game = game
+
+        self.seeds1 = Tilesheet("assets/items/seeds.png", 16, 16, 6, 7)
+
         self.image = pygame.transform.scale(pygame.image.load("assets/pause/pause_inventory.png"), (891, 417))
         self.rect = self.image.get_rect(center=(config.SCREEN_WIDTH/2, config.SCREEN_HEIGHT/2 - 50))
         self.selector_image = pygame.transform.scale(pygame.image.load("assets/overlay/hotbar_selector.png"), (50, 55))
@@ -31,7 +35,7 @@ class Inventory:
             'pickaxe': pickaxe
         }
         self.items = {
-            'seeds': {},
+            'seeds': {'strawberry': 3, 'carrot': 2},
             'tools': {},
             'materials': {},
             'forage': {},
@@ -41,8 +45,8 @@ class Inventory:
         }
         self.slots = {
             'inventory': {
-                '1': {'item': None, 'pos': (489, 270), 'amount': 0, 'rect': pygame.Rect(489, 270, 51, 54)},
-                '2': {'item': None, 'pos': (552, 270), 'amount': 0, 'rect': pygame.Rect(552, 270, 51, 54)},
+                '1': {'item': InventoryItem('strawberry', 'seeds', pygame.transform.scale(self.seeds1.get_tile(2, 0), (48, 48))), 'pos': (489, 270), 'amount': 3, 'rect': pygame.Rect(489, 270, 51, 54)},
+                '2': {'item': InventoryItem('carrot', 'seeds', pygame.transform.scale(self.seeds1.get_tile(0, 0), (48, 48))), 'pos': (552, 270), 'amount': 2, 'rect': pygame.Rect(552, 270, 51, 54)},
                 '3': {'item': None, 'pos': (615, 270), 'amount': 0, 'rect': pygame.Rect(615, 270, 51, 54)},
                 '4': {'item': None, 'pos': (678, 270), 'amount': 0, 'rect': pygame.Rect(678, 270, 51, 54)},
                 '5': {'item': None, 'pos': (741, 270), 'amount': 0, 'rect': pygame.Rect(741, 270, 51, 54)},
@@ -89,12 +93,12 @@ class Inventory:
         for i in range(1, 28):
             if self.slots['inventory'][str(i)]['item']:
                 surface.blit(self.slots['inventory'][str(i)]['item'].img, self.slots['inventory'][str(i)]['rect'])
-                self.game.game_manager.draw_text(surface, str(self.slots['inventory'][str(i)]['amount']), 20, config.BLACK, self.slots['inventory'][str(i)]['rect'].bottomright[0]-10, self.slots['inventory'][str(i)]['rect'].bottomright[1]-15)
+                self.game.game_manager.draw_text(surface, str(self.slots['inventory'][str(i)]['amount']), 30, config.BLACK, self.slots['inventory'][str(i)]['rect'].bottomright[0]-5, self.slots['inventory'][str(i)]['rect'].bottomright[1]-15)
         for i in range(1, 10):
             if self.slots['hotbar'][str(i)]['item']:
                 surface.blit(self.slots['hotbar'][str(i)]['item'].img, self.slots['hotbar'][str(i)]['rect'])
                 if i != 1:
-                    self.game.game_manager.draw_text(surface, str(self.slots['hotbar'][str(i)]['amount']), 20,
+                    self.game.game_manager.draw_text(surface, str(self.slots['hotbar'][str(i)]['amount']), 30,
                                                      config.BLACK,
                                                      self.slots['hotbar'][str(i)]['rect'].bottomright[0] - 10,
                                                      self.slots['hotbar'][str(i)]['rect'].bottomright[1] - 15)
@@ -132,6 +136,22 @@ class Inventory:
             else:
                 self.selected_menu = 'inventory'
         self.selector_rect.topleft = self.slots[self.selected_menu][str(self.selected_slot)]['pos']
+        if actions['enter']:
+            if self.selected_menu == 'inventory':
+                if self.slots['inventory'][str(self.selected_slot)]['item']:
+                    for i in range(1, 10):
+                        if self.slots['hotbar'][str(i)]['item'] == self.slots['inventory'][str(self.selected_slot)]['item']:
+                            break
+                        if self.slots['hotbar'][str(i)]['item'] is None:
+                            self.slots['hotbar'][str(i)]['item'] = self.slots['inventory'][str(self.selected_slot)]['item']
+                            self.slots['hotbar'][str(i)]['amount'] = self.slots['inventory'][str(self.selected_slot)][
+                                'amount']
+                            break
+            if self.selected_menu == 'hotbar':
+                if self.selected_slot != 1:
+                    if self.slots['hotbar'][str(self.selected_slot)]['item']:
+                        self.slots['hotbar'][str(self.selected_slot)]['item'] = None
+                        self.slots['hotbar'][str(self.selected_slot)]['amount'] = 0
 
     def update_hotbar(self):
         self.slots['hotbar']['1']['item'] = self.tools[self.player.selected_tool]
