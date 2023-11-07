@@ -20,7 +20,12 @@ FARM_LAYERS = {
     'house top': 9,
     'rain drops': 10
 }
-
+FARMHOUSE_LAYERS = {
+    'ground': 0,
+    'furniture floor': 1,
+    'furniture': 2,
+    'main': 3
+}
 PLAYER_TOOL_OFFSET = {
     'left': Vector2(-50, 10),
     'right': Vector2(50, 10),

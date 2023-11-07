@@ -105,7 +105,7 @@ class Farm(State):
                 Interaction((obj.x*3, obj.y*3), (obj.width, obj.height), self.interaction_sprites, obj.name)
 
             if obj.name == "Farmhouse Start":
-                self.player = Player((obj.x * 3, obj.y * 3), self.game_manager.game, self.all_sprites, self.collision_sprites, self.tree_sprites, self.interaction_sprites)
+                self.player = Player((obj.x * 3, obj.y * 3), self.game_manager.game, self.all_sprites, self.collision_sprites, self.tree_sprites, self.interaction_sprites, self.game_manager.game.zone)
                 self.game_manager.game.player = self.player
 
     def update(self, delta_time, actions):

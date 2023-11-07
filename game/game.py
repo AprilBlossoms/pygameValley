@@ -1,6 +1,7 @@
 import pygame
 
 from game.overlay.overlay import Overlay
+from game.states.farmhouse import Farmhouse
 from game.states.pause.inventory_item import InventoryItem
 
 
@@ -18,12 +19,17 @@ class Game:
         self.overlay.display(self.game_manager.screen)
 
     def player_add(self, type, item, img, amount):
-        if item in self.player.inventory.items[type]:
-            self.player.inventory.items[type][item] += amount
-            for i in range(1, 28):
-                if self.player.inventory.slots['inventory'][str(i)]['item']:
-                    if self.player.inventory.slots['inventory'][str(i)]['item'].name == item:
-                        self.player.inventory.slots['inventory'][str(i)]['amount'] += amount
+        for i in range(1, 28):
+            if self.player.inventory.slots['inventory'][str(i)]['item']:
+                if self.player.inventory.slots['inventory'][str(i)]['item'].name == item:
+                    self.player.inventory.slots['inventory'][str(i)]['amount'] += amount
         else:
             self.player.inventory.add(InventoryItem(item, type, img), amount)
-            self.player.inventory.items[type][item] = amount
+
+
+    def zone(self, zone):
+        if zone == 'Farmhouse':
+            new_state = Farmhouse(self.game_manager, "Farmhouse", self.player.inventory)
+            new_state.enter_state()
+        if zone == "Farm":
+            self.game_manager.state_stack.pop()

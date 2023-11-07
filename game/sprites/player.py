@@ -2,19 +2,20 @@ import pygame
 
 from game import config
 from game.states.pause.inventory import Inventory
+from game.states.transition import Transition
 from game.support import Tilesheet, Timer
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, pos, game, group, collision_sprites, tree_sprites, interactions):
+    def __init__(self, pos, game, group, collision_sprites, tree_sprites, interactions, zone):
         super().__init__(group)
         self.game = game
         self.z = config.FARM_LAYERS['main']
-
+        self.zone = zone
         self.collision_sprites = collision_sprites
         self.tree_sprites = tree_sprites
         self.interactions = interactions
-
+        self.sleep = False
         self.base_tiles = Tilesheet("assets/player/base.png", 64, 64, 14, 13)
         self.axe_tiles = Tilesheet("assets/player/axe.png", 128, 128, 5, 5)
         self.pickaxe_tiles = Tilesheet("assets/player/pickaxe.png", 128, 128, 5, 5)
@@ -204,6 +205,12 @@ class Player(pygame.sprite.Sprite):
                         self.selected_hotbar = 1
 
                 if actions['enter']:
+                    collided_interaction_sprite = pygame.sprite.spritecollide(self, self.interactions, False)
+                    if collided_interaction_sprite:
+                        if collided_interaction_sprite[0].name == 'Enter Farmhouse':
+                            self.zone("Farmhouse")
+                        if collided_interaction_sprite[0].name == 'Bed':
+                            self.sleep = True
                     if self.selected_hotbar == 1:
                         self.timers['tool use'].activate()
                         self.direction = pygame.math.Vector2()
@@ -252,6 +259,11 @@ class Player(pygame.sprite.Sprite):
             timer.update()
 
     def collision(self, direction):
+        for sprite in self.interactions.sprites():
+            if hasattr(sprite, "name"):
+                if sprite.name == 'Exit farmhouse':
+                    if self.hitbox.colliderect(sprite):
+                        self.zone("Farm")
         for sprite in self.collision_sprites.sprites():
             if hasattr(sprite, 'hitbox'):
                 if sprite.hitbox.colliderect(self.hitbox):
@@ -282,3 +294,10 @@ class Player(pygame.sprite.Sprite):
         self.get_target_pos()
         self.move(dt)
         self.animate(dt)
+        if self.sleep:
+            self.transition()
+
+    def transition(self):
+        self.sleep = False
+        new_state = Transition(self.game.game_manager, "Transition")
+        new_state.enter_state()

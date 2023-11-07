@@ -34,15 +34,7 @@ class Inventory:
             'axe': axe,
             'pickaxe': pickaxe
         }
-        self.items = {
-            'seeds': {'strawberry': 3, 'carrot': 2},
-            'tools': {},
-            'materials': {},
-            'forage': {},
-            'crops': {},
-            'misc': {},
-            'coins': 500
-        }
+
         self.slots = {
             'inventory': {
                 '1': {'item': InventoryItem('strawberry', 'seeds', pygame.transform.scale(self.seeds1.get_tile(2, 0), (48, 48))), 'pos': (489, 270), 'amount': 3, 'rect': pygame.Rect(489, 270, 51, 54)},

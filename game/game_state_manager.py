@@ -45,7 +45,6 @@ class GameStateManager:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     self.actions['enter'] = True
-                    print("enter")
                 elif event.key == pygame.K_LEFT:
                     self.actions['left'] = True
                 elif event.key == pygame.K_RIGHT:
@@ -81,7 +80,6 @@ class GameStateManager:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     self.actions['left mouse'] = True
-                    print("left mouse")
                 elif event.button == 3:
                     self.actions['right mouse'] = True
             if event.type == pygame.KEYUP:
