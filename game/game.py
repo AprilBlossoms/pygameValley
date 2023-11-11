@@ -1,3 +1,5 @@
+from random import randint
+
 import pygame
 
 from game.overlay.overlay import Overlay
@@ -8,6 +10,7 @@ from game.states.pause.inventory_item import InventoryItem
 class Game:
     def __init__(self, game_manager):
         self.game_manager = game_manager
+        self.raining = randint(0, 10) > 3
 
     def game_loop(self):
         self.game_manager.dt = self.game_manager.clock.tick() / 1000
@@ -29,7 +32,8 @@ class Game:
 
     def zone(self, zone):
         if zone == 'Farmhouse':
-            new_state = Farmhouse(self.game_manager, "Farmhouse", self.player.inventory)
-            new_state.enter_state()
+            self.game_manager.farmhouse = Farmhouse(self.game_manager, "Farmhouse", self.player.inventory)
+            self.game_manager.farmhouse.enter_state()
         if zone == "Farm":
-            self.game_manager.state_stack.pop()
+            self.game_manager.farmhouse.exit_state()
+

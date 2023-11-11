@@ -1,3 +1,5 @@
+from random import randint
+
 import pygame
 
 from game import config
@@ -7,11 +9,12 @@ from game.support import Tilesheet, Timer
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, pos, game, group, collision_sprites, tree_sprites, interactions, zone):
+    def __init__(self, pos, game, group, collision_sprites, tree_sprites, interactions, zone, soil_layer):
         super().__init__(group)
         self.game = game
         self.z = config.FARM_LAYERS['main']
         self.zone = zone
+        self.soil_layer = soil_layer
         self.collision_sprites = collision_sprites
         self.tree_sprites = tree_sprites
         self.interactions = interactions
@@ -139,7 +142,7 @@ class Player(pygame.sprite.Sprite):
 
         self.timers = {
             'tool use': Timer(350, self.use_tool),
-            'seed use': Timer(350, self.use_seed),
+            'seed use': Timer(350),
             'switch item': Timer(200),
             'inventory': Timer(200)
         }
@@ -154,10 +157,24 @@ class Player(pygame.sprite.Sprite):
             for tree in self.tree_sprites.sprites():
                 if tree.rect.collidepoint(self.target_pos):
                     tree.damage()
+        if self.selected_tool == 'hoe':
+            self.soil_layer.till_soil(self.target_pos)
+            if self.game.raining:
+                self.soil_layer.water_all()
+        if self.selected_tool == 'water':
+            self.soil_layer.water_soil(self.target_pos)
 
-    def use_seed(self):
-        pass
-
+    def use_seed(self, seed_item):
+        if self.soil_layer.plant_seed(self.target_pos, seed_item.name):
+            self.inventory.slots['hotbar'][str(self.selected_hotbar)]['amount'] -= 1
+            if self.inventory.slots['hotbar'][str(self.selected_hotbar)]['amount'] == 0:
+                self.inventory.slots['hotbar'][str(self.selected_hotbar)]['item'] = None
+            for i in range(1, 28):
+                if self.inventory.slots['inventory'][str(i)]['item']:
+                    if self.inventory.slots['inventory'][str(i)]['item'].name == seed_item.name:
+                        self.inventory.slots['inventory'][str(i)]['amount'] -= 1
+                        if self.inventory.slots['inventory'][str(i)]['amount'] == 0:
+                            self.inventory.slots['inventory'][str(i)]['item'] = None
     def animate(self, dt):
         self.frame_index += 4 * dt
         if self.frame_index >= len(self.animations[self.status]):
@@ -215,6 +232,10 @@ class Player(pygame.sprite.Sprite):
                         self.timers['tool use'].activate()
                         self.direction = pygame.math.Vector2()
                         self.frame_index = 0
+                    elif self.inventory.slots['hotbar'][str(self.selected_hotbar)]['item']:
+                        if self.inventory.slots['hotbar'][str(self.selected_hotbar)]['item'].item_type == 'seeds':
+                            self.timers['seed use'].activate()
+                            self.use_seed(self.inventory.slots['hotbar'][str(self.selected_hotbar)]['item'])
 
                 if actions['left'] and not self.timers['switch item'].active:
                     self.timers['switch item'].activate()
@@ -239,6 +260,8 @@ class Player(pygame.sprite.Sprite):
             self.status = self.status.split('_')[0] + "_idle"
         if self.timers['tool use'].active:
             self.status = self.status.split('_')[0] + "_" + self.selected_tool
+        if self.timers['seed use'].active:
+            self.status = self.status.split('_')[0] + "_sowing"
 
     def move(self, dt):
         if self.direction.magnitude() > 0:
@@ -299,5 +322,8 @@ class Player(pygame.sprite.Sprite):
 
     def transition(self):
         self.sleep = False
+        self.soil_layer.update_plants()
+        self.soil_layer.remove_water()
+        self.game.raining = randint(0, 10) > 3
         new_state = Transition(self.game.game_manager, "Transition")
         new_state.enter_state()

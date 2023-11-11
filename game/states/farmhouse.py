@@ -43,7 +43,7 @@ class Farmhouse(State):
                 Interaction((489, 763), (obj.width*2, obj.height*2), self.interaction_sprites, obj.name)
 
             if obj.name == "Farmhouse Start":
-                self.player = Player((688, 1016), self.game_manager.game, self.all_sprites, self.collision_sprites, None, self.interaction_sprites, self.game_manager.game.zone)
+                self.player = Player((688, 1016), self.game_manager.game, self.all_sprites, self.collision_sprites, None, self.interaction_sprites, self.game_manager.game.zone, self.game_manager.state_stack[-1].soil_layer)
                 self.player.inventory = self.inventory
 
     def update(self, dt, actions):

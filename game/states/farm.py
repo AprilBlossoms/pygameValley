@@ -4,6 +4,8 @@ import pytmx
 from game import config
 from game.sprites.camera_group import CameraGroup
 from game.sprites.player import Player
+from game.sprites.rain import Rain
+from game.sprites.soil import SoilLayer
 from game.sprites.sprites import Generic, Water, Farmable, Tree, Interaction, Stump
 from game.states.state import State
 from game.support import import_folder
@@ -17,6 +19,8 @@ class Farm(State):
         self.farmable_sprites = pygame.sprite.Group()
         self.tree_sprites = pygame.sprite.Group()
         self.interaction_sprites = pygame.sprite.Group()
+        self.rain = Rain(self.all_sprites)
+        self.soil_layer = SoilLayer(self.all_sprites, self.collision_sprites, self.farmable_sprites)
 
 
         self.setup()
@@ -105,10 +109,23 @@ class Farm(State):
                 Interaction((obj.x*3, obj.y*3), (obj.width, obj.height), self.interaction_sprites, obj.name)
 
             if obj.name == "Farmhouse Start":
-                self.player = Player((obj.x * 3, obj.y * 3), self.game_manager.game, self.all_sprites, self.collision_sprites, self.tree_sprites, self.interaction_sprites, self.game_manager.game.zone)
+                self.player = Player((obj.x * 3, obj.y * 3), self.game_manager.game, self.all_sprites, self.collision_sprites, self.tree_sprites, self.interaction_sprites, self.game_manager.game.zone, self.soil_layer)
                 self.game_manager.game.player = self.player
 
     def update(self, delta_time, actions):
         self.game_manager.screen.fill(config.BLACK)
         self.all_sprites.custom_draw(self.player)
         self.all_sprites.update(delta_time)
+        self.harvest(self.game_manager.actions)
+        if self.game_manager.game.raining:
+            self.rain.update()
+
+    def harvest(self, actions):
+        if actions['enter']:
+            for sprite in self.farmable_sprites.sprites():
+                if sprite.plant:
+                    if sprite.plant.harvestable and sprite.plant.rect.colliderect(self.player.hitbox):
+                        self.game_manager.game.player_add('crops', sprite.plant.plant_type, sprite.plant.harvest_img,
+                                        sprite.plant.harvest_amount)
+                        sprite.plant.kill()
+                        sprite.plant = False

@@ -32,3 +32,8 @@ PLAYER_TOOL_OFFSET = {
     'up': Vector2(0, -15),
     'down': Vector2(0, 30)
 }
+
+GROW_SPEED = {
+    'carrot': 1,
+    'strawberry': 0.8
+}
