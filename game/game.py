@@ -24,9 +24,9 @@ class Game:
     def player_add(self, type, item, img, amount):
         for i in range(1, 28):
             if self.player.inventory.slots['inventory'][str(i)]['item']:
-                if self.player.inventory.slots['inventory'][str(i)]['item'].name == item:
+                if self.player.inventory.slots['inventory'][str(i)]['item'].name == item and self.player.inventory.slots['inventory'][str(i)]['item'].item_type == type:
                     self.player.inventory.slots['inventory'][str(i)]['amount'] += amount
-        else:
+                    break
             self.player.inventory.add(InventoryItem(item, type, img), amount)
 
 

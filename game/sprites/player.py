@@ -171,7 +171,7 @@ class Player(pygame.sprite.Sprite):
                 self.inventory.slots['hotbar'][str(self.selected_hotbar)]['item'] = None
             for i in range(1, 28):
                 if self.inventory.slots['inventory'][str(i)]['item']:
-                    if self.inventory.slots['inventory'][str(i)]['item'].name == seed_item.name:
+                    if self.inventory.slots['inventory'][str(i)]['item'].name == seed_item.name and self.inventory.slots['inventory'][str(i)]['item'].item_type == 'seeds':
                         self.inventory.slots['inventory'][str(i)]['amount'] -= 1
                         if self.inventory.slots['inventory'][str(i)]['amount'] == 0:
                             self.inventory.slots['inventory'][str(i)]['item'] = None
