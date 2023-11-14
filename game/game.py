@@ -22,11 +22,17 @@ class Game:
         self.overlay.display(self.game_manager.screen)
 
     def player_add(self, type, item, img, amount):
+        already_added = False
         for i in range(1, 28):
             if self.player.inventory.slots['inventory'][str(i)]['item']:
                 if self.player.inventory.slots['inventory'][str(i)]['item'].name == item and self.player.inventory.slots['inventory'][str(i)]['item'].item_type == type:
                     self.player.inventory.slots['inventory'][str(i)]['amount'] += amount
-                    break
+                    already_added = True
+        for i in range(1, 10):
+            if self.player.inventory.slots['hotbar'][str(i)]['item']:
+                if self.player.inventory.slots['hotbar'][str(i)]['item'].name == item and self.player.inventory.slots['hotbar'][str(i)]['item'].item_type == type:
+                    self.player.inventory.slots['hotbar'][str(i)]['amount'] += amount
+        if not already_added:
             self.player.inventory.add(InventoryItem(item, type, img), amount)
 
 
