@@ -190,6 +190,7 @@ class Player(pygame.sprite.Sprite):
                     self.display_inventory = True
                 else:
                     self.display_inventory = False
+                    self.game.paused = False
             if not self.display_inventory:
                 if actions['move up']:
                     self.status = 'up'
@@ -253,6 +254,7 @@ class Player(pygame.sprite.Sprite):
 
     def toggle_inventory(self):
         if self.display_inventory:
+            self.game.paused = True
             self.inventory.render(self.game.game_manager.screen)
             self.inventory.update(self.game.game_manager.dt, self.game.game_manager.actions)
     def get_status(self):
@@ -321,6 +323,16 @@ class Player(pygame.sprite.Sprite):
             self.transition()
 
     def transition(self):
+        self.game.day += 1
+        self.game.day_index += 1
+        if self.game.day_index == 7:
+            self.game.day_index = 0
+        if self.game.day == 29:
+            self.game.day = 1
+            self.game.season_index += 1
+            if self.game.season_index == 4:
+                self.game.year += 1
+                self.game.season_index = 0
         self.sleep = False
         self.soil_layer.update_plants()
         self.soil_layer.remove_water()

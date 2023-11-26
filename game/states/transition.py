@@ -39,6 +39,9 @@ class Transition(State, Menu):
 
     def render(self, surface):
         surface.blit(self.image, self.rect)
+        self.game_manager.draw_text(surface, f"Year {self.game_manager.game.year}", 50, config.PINK, config.SCREEN_WIDTH/2, (config.SCREEN_HEIGHT/2)-75)
+        self.game_manager.draw_text(surface, f"{self.game_manager.game.seasons[self.game_manager.game.season_index]} Day {self.game_manager.game.day}", 70, config.PINK, config.SCREEN_WIDTH/2, (config.SCREEN_HEIGHT/2)-30)
+        self.game_manager.draw_text(surface, f"{self.game_manager.game.days_full[self.game_manager.game.day_index]}", 50, config.PINK, config.SCREEN_WIDTH/2, (config.SCREEN_HEIGHT/2)+20)
         self.game_manager.draw_text(surface, "Details", 40, config.PINK, self.detailsx, self.detailsy)
         self.game_manager.draw_text(surface, "Okay", 40, config.PINK, self.okx, self.oky)
         self.draw_cursor()
