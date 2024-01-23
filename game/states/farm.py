@@ -26,7 +26,7 @@ class Farm(State):
         self.setup()
 
     def setup(self):
-        map_data = pytmx.load_pygame(r'C:\Users\april\OneDrive\Documents\Tiled Maps\sim_farm.tmx')
+        map_data = pytmx.load_pygame(r'C:\Users\AprilMay\Documents\Tiled Maps\sim_farm.tmx')
 
         for x, y, surf in map_data.get_layer_by_name("Ground").tiles():
             transformed_surf = pygame.transform.scale(surf, (48, 48))

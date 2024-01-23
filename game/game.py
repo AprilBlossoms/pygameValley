@@ -24,7 +24,7 @@ class Game:
         self.paused = False
 
     def game_loop(self):
-        self.game_manager.dt = self.game_manager.clock.tick() / 1000
+        self.game_manager.dt = self.game_manager.clock.tick(30) / 1000
         self.update_time(self.game_manager.dt)
         self.game_manager.check_events()
         self.game_manager.render()

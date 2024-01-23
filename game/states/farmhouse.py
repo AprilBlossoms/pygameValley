@@ -18,7 +18,7 @@ class Farmhouse(State):
         self.setup()
 
     def setup(self):
-        map_data = pytmx.load_pygame(r'C:\Users\april\OneDrive\Documents\Tiled Maps\farmhouse_base.tmx')
+        map_data = pytmx.load_pygame(r'C:\Users\AprilMay\Documents\Tiled Maps\farmhouse_base.tmx')
         for x, y, surf in map_data.get_layer_by_name("Ground").tiles():
             transformed_surf = pygame.transform.scale(surf, (36, 36))
             Generic((x*36, y*36), transformed_surf, self.all_sprites, FARMHOUSE_LAYERS['ground'])
