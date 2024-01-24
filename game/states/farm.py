@@ -26,7 +26,7 @@ class Farm(State):
         self.setup()
 
     def setup(self):
-        map_data = pytmx.load_pygame(r'C:\Users\AprilMay\Documents\Tiled Maps\sim_farm.tmx')
+        map_data = pytmx.load_pygame(r'C:\Users\april\OneDrive\Documents\Tiled Maps\sim_farm.tmx')
 
         for x, y, surf in map_data.get_layer_by_name("Ground").tiles():
             transformed_surf = pygame.transform.scale(surf, (48, 48))
@@ -70,7 +70,7 @@ class Farm(State):
                     surf=pygame.transform.scale(obj.image, (96, 96)),
                     groups=[self.all_sprites, self.collision_sprites, self.tree_sprites],
                     name=obj.name,
-                    player_add=self.game_manager.game.player_add
+                    player_add=self.game_manager.player_add
                 )
             else:
                 Stump(
@@ -78,7 +78,7 @@ class Farm(State):
                     surf=pygame.transform.scale(obj.image, (160, 64)),
                     groups=[self.all_sprites, self.collision_sprites, self.tree_sprites],
                     name=obj.name,
-                    player_add=self.game_manager.game.player_add
+                    player_add=self.game_manager.player_add
                 )
 
         for obj in map_data.get_layer_by_name("Decorations"):
@@ -109,15 +109,15 @@ class Farm(State):
                 Interaction((obj.x*3, obj.y*3), (obj.width, obj.height), self.interaction_sprites, obj.name)
 
             if obj.name == "Farmhouse Start":
-                self.player = Player((obj.x * 3, obj.y * 3), self.game_manager.game, self.all_sprites, self.collision_sprites, self.tree_sprites, self.interaction_sprites, self.game_manager.game.zone, self.soil_layer)
-                self.game_manager.game.player = self.player
+                self.player = Player((obj.x * 3, obj.y * 3), self.game_manager, self.all_sprites, self.collision_sprites, self.tree_sprites, self.interaction_sprites, self.game_manager.zone, self.soil_layer)
+                self.game_manager.player = self.player
 
     def update(self, delta_time, actions):
         self.game_manager.screen.fill(config.BLACK)
         self.all_sprites.custom_draw(self.player)
         self.all_sprites.update(delta_time)
         self.harvest(self.game_manager.actions)
-        if self.game_manager.game.raining:
+        if self.game_manager.raining:
             self.rain.update()
 
     def harvest(self, actions):

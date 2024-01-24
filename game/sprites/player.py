@@ -9,9 +9,9 @@ from game.support import Tilesheet, Timer
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, pos, game, group, collision_sprites, tree_sprites, interactions, zone, soil_layer):
+    def __init__(self, pos, game_manager, group, collision_sprites, tree_sprites, interactions, zone, soil_layer):
         super().__init__(group)
-        self.game = game
+        self.game_manager = game_manager
         self.z = config.FARM_LAYERS['main']
         self.zone = zone
         self.soil_layer = soil_layer
@@ -29,7 +29,7 @@ class Player(pygame.sprite.Sprite):
             'up_idle': [self.base_tiles.get_tile(0, 8).convert_alpha()],
             'down_idle': [self.base_tiles.get_tile(0, 10).convert_alpha()],
             'left_idle': [self.base_tiles.get_tile(0, 9).convert_alpha()],
-            'right_idle': [self.base_tiles.get_tile(0, 12).convert_alpha()],
+            'right_idle': [self.base_tiles.get_tile(0, 11).convert_alpha()],
             'up': [self.base_tiles.get_tile(1, 8).convert_alpha(),
                    self.base_tiles.get_tile(2, 8).convert_alpha(),
                    self.base_tiles.get_tile(3, 8).convert_alpha(),
@@ -41,262 +41,262 @@ class Player(pygame.sprite.Sprite):
                    self.base_tiles.get_tile(9, 8).convert_alpha(),
                    self.base_tiles.get_tile(10, 8).convert_alpha()],
             'down': [self.base_tiles.get_tile(1, 10).convert_alpha(),
-                   self.base_tiles.get_tile(2, 10).convert_alpha(),
-                   self.base_tiles.get_tile(3, 10).convert_alpha(),
-                   self.base_tiles.get_tile(4, 10).convert_alpha(),
-                   self.base_tiles.get_tile(5, 10).convert_alpha(),
-                   self.base_tiles.get_tile(6, 10).convert_alpha(),
-                   self.base_tiles.get_tile(7, 10).convert_alpha(),
-                   self.base_tiles.get_tile(8, 10).convert_alpha(),
-                   self.base_tiles.get_tile(9, 10).convert_alpha(),
-                   self.base_tiles.get_tile(10, 10).convert_alpha()],
+                     self.base_tiles.get_tile(2, 10).convert_alpha(),
+                     self.base_tiles.get_tile(3, 10).convert_alpha(),
+                     self.base_tiles.get_tile(4, 10).convert_alpha(),
+                     self.base_tiles.get_tile(5, 10).convert_alpha(),
+                     self.base_tiles.get_tile(6, 10).convert_alpha(),
+                     self.base_tiles.get_tile(7, 10).convert_alpha(),
+                     self.base_tiles.get_tile(8, 10).convert_alpha(),
+                     self.base_tiles.get_tile(9, 10).convert_alpha(),
+                     self.base_tiles.get_tile(10, 10).convert_alpha()],
             'left': [self.base_tiles.get_tile(1, 9).convert_alpha(),
-                   self.base_tiles.get_tile(2, 9).convert_alpha(),
-                   self.base_tiles.get_tile(3, 9).convert_alpha(),
-                   self.base_tiles.get_tile(4, 9).convert_alpha(),
-                   self.base_tiles.get_tile(5, 9).convert_alpha(),
-                   self.base_tiles.get_tile(6, 9).convert_alpha(),
-                   self.base_tiles.get_tile(7, 9).convert_alpha(),
-                   self.base_tiles.get_tile(8, 9).convert_alpha(),
-                   self.base_tiles.get_tile(9, 9).convert_alpha(),
-                   self.base_tiles.get_tile(10, 9).convert_alpha()],
-            'right': [self.base_tiles.get_tile(1, 12).convert_alpha(),
-                   self.base_tiles.get_tile(2, 12).convert_alpha(),
-                   self.base_tiles.get_tile(3, 12).convert_alpha(),
-                   self.base_tiles.get_tile(4, 12).convert_alpha(),
-                   self.base_tiles.get_tile(5, 12).convert_alpha(),
-                   self.base_tiles.get_tile(6, 12).convert_alpha(),
-                   self.base_tiles.get_tile(7, 12).convert_alpha(),
-                   self.base_tiles.get_tile(8, 12).convert_alpha(),
-                   self.base_tiles.get_tile(9, 12).convert_alpha(),
-                   self.base_tiles.get_tile(10, 12).convert_alpha()],
+                     self.base_tiles.get_tile(2, 9).convert_alpha(),
+                     self.base_tiles.get_tile(3, 9).convert_alpha(),
+                     self.base_tiles.get_tile(4, 9).convert_alpha(),
+                     self.base_tiles.get_tile(5, 9).convert_alpha(),
+                     self.base_tiles.get_tile(6, 9).convert_alpha(),
+                     self.base_tiles.get_tile(7, 9).convert_alpha(),
+                     self.base_tiles.get_tile(8, 9).convert_alpha(),
+                     self.base_tiles.get_tile(9, 9).convert_alpha(),
+                     self.base_tiles.get_tile(10, 9).convert_alpha()],
+            'right': [self.base_tiles.get_tile(1, 11).convert_alpha(),
+                      self.base_tiles.get_tile(2, 11).convert_alpha(),
+                      self.base_tiles.get_tile(3, 11).convert_alpha(),
+                      self.base_tiles.get_tile(4, 11).convert_alpha(),
+                      self.base_tiles.get_tile(5, 11).convert_alpha(),
+                      self.base_tiles.get_tile(6, 11).convert_alpha(),
+                      self.base_tiles.get_tile(7, 11).convert_alpha(),
+                      self.base_tiles.get_tile(8, 11).convert_alpha(),
+                      self.base_tiles.get_tile(9, 11).convert_alpha(),
+                      self.base_tiles.get_tile(10, 11).convert_alpha()],
             'down_sowing': [self.base_tiles.get_tile(0, 15).convert_alpha(),
-                   self.base_tiles.get_tile(1, 15).convert_alpha(),
-                   self.base_tiles.get_tile(2, 15).convert_alpha(),
-                   self.base_tiles.get_tile(3, 15).convert_alpha(),
-                   self.base_tiles.get_tile(4, 15).convert_alpha(),
-                   self.base_tiles.get_tile(5, 15).convert_alpha(),
-                   self.base_tiles.get_tile(6, 15).convert_alpha(),
-                   self.base_tiles.get_tile(7, 15).convert_alpha(),
-                   self.base_tiles.get_tile(8, 15).convert_alpha(),
-                   self.base_tiles.get_tile(9, 15).convert_alpha(),
-                   self.base_tiles.get_tile(10, 15).convert_alpha(),
-                   self.base_tiles.get_tile(11, 15).convert_alpha()],
+                            self.base_tiles.get_tile(1, 15).convert_alpha(),
+                            self.base_tiles.get_tile(2, 15).convert_alpha(),
+                            self.base_tiles.get_tile(3, 15).convert_alpha(),
+                            self.base_tiles.get_tile(4, 15).convert_alpha(),
+                            self.base_tiles.get_tile(5, 15).convert_alpha(),
+                            self.base_tiles.get_tile(6, 15).convert_alpha(),
+                            self.base_tiles.get_tile(7, 15).convert_alpha(),
+                            self.base_tiles.get_tile(8, 15).convert_alpha(),
+                            self.base_tiles.get_tile(9, 15).convert_alpha(),
+                            self.base_tiles.get_tile(10, 15).convert_alpha(),
+                            self.base_tiles.get_tile(11, 15).convert_alpha()],
             'up_sowing': [self.base_tiles.get_tile(0, 13).convert_alpha(),
-                   self.base_tiles.get_tile(1, 13).convert_alpha(),
-                   self.base_tiles.get_tile(2, 13).convert_alpha(),
-                   self.base_tiles.get_tile(3, 13).convert_alpha(),
-                   self.base_tiles.get_tile(4, 13).convert_alpha(),
-                   self.base_tiles.get_tile(5, 13).convert_alpha(),
-                   self.base_tiles.get_tile(6, 13).convert_alpha(),
-                   self.base_tiles.get_tile(7, 13).convert_alpha(),
-                   self.base_tiles.get_tile(8, 13).convert_alpha(),
-                   self.base_tiles.get_tile(9, 13).convert_alpha(),
-                   self.base_tiles.get_tile(10, 13).convert_alpha(),
-                   self.base_tiles.get_tile(11, 13).convert_alpha()],
+                          self.base_tiles.get_tile(1, 13).convert_alpha(),
+                          self.base_tiles.get_tile(2, 13).convert_alpha(),
+                          self.base_tiles.get_tile(3, 13).convert_alpha(),
+                          self.base_tiles.get_tile(4, 13).convert_alpha(),
+                          self.base_tiles.get_tile(5, 13).convert_alpha(),
+                          self.base_tiles.get_tile(6, 13).convert_alpha(),
+                          self.base_tiles.get_tile(7, 13).convert_alpha(),
+                          self.base_tiles.get_tile(8, 13).convert_alpha(),
+                          self.base_tiles.get_tile(9, 13).convert_alpha(),
+                          self.base_tiles.get_tile(10, 13).convert_alpha(),
+                          self.base_tiles.get_tile(11, 13).convert_alpha()],
             'left_sowing': [self.base_tiles.get_tile(0, 14).convert_alpha(),
-                   self.base_tiles.get_tile(1, 14).convert_alpha(),
-                   self.base_tiles.get_tile(2, 14).convert_alpha(),
-                   self.base_tiles.get_tile(3, 14).convert_alpha(),
-                   self.base_tiles.get_tile(4, 14).convert_alpha(),
-                   self.base_tiles.get_tile(5, 14).convert_alpha(),
-                   self.base_tiles.get_tile(6, 14).convert_alpha(),
-                   self.base_tiles.get_tile(7, 14).convert_alpha(),
-                   self.base_tiles.get_tile(8, 14).convert_alpha(),
-                   self.base_tiles.get_tile(9, 14).convert_alpha(),
-                   self.base_tiles.get_tile(10, 14).convert_alpha(),
-                   self.base_tiles.get_tile(11, 14).convert_alpha()],
+                            self.base_tiles.get_tile(1, 14).convert_alpha(),
+                            self.base_tiles.get_tile(2, 14).convert_alpha(),
+                            self.base_tiles.get_tile(3, 14).convert_alpha(),
+                            self.base_tiles.get_tile(4, 14).convert_alpha(),
+                            self.base_tiles.get_tile(5, 14).convert_alpha(),
+                            self.base_tiles.get_tile(6, 14).convert_alpha(),
+                            self.base_tiles.get_tile(7, 14).convert_alpha(),
+                            self.base_tiles.get_tile(8, 14).convert_alpha(),
+                            self.base_tiles.get_tile(9, 14).convert_alpha(),
+                            self.base_tiles.get_tile(10, 14).convert_alpha(),
+                            self.base_tiles.get_tile(11, 14).convert_alpha()],
             'right_sowing': [self.base_tiles.get_tile(0, 16).convert_alpha(),
-                   self.base_tiles.get_tile(1, 16).convert_alpha(),
-                   self.base_tiles.get_tile(2, 16).convert_alpha(),
-                   self.base_tiles.get_tile(3, 16).convert_alpha(),
-                   self.base_tiles.get_tile(4, 16).convert_alpha(),
-                   self.base_tiles.get_tile(5, 16).convert_alpha(),
-                   self.base_tiles.get_tile(6, 16).convert_alpha(),
-                   self.base_tiles.get_tile(7, 16).convert_alpha(),
-                   self.base_tiles.get_tile(8, 16).convert_alpha(),
-                   self.base_tiles.get_tile(9, 16).convert_alpha(),
-                   self.base_tiles.get_tile(10, 16).convert_alpha(),
-                   self.base_tiles.get_tile(11, 16).convert_alpha()],
-            'death': [self.base_tiles.get_tile(0, 20), self.base_tiles.get_tile(1, 20),
-                      self.base_tiles.get_tile(2, 20), self.base_tiles.get_tile(3, 20),
-                      self.base_tiles.get_tile(4, 20), self.base_tiles.get_tile(5, 20)],
+                             self.base_tiles.get_tile(1, 16).convert_alpha(),
+                             self.base_tiles.get_tile(2, 16).convert_alpha(),
+                             self.base_tiles.get_tile(3, 16).convert_alpha(),
+                             self.base_tiles.get_tile(4, 16).convert_alpha(),
+                             self.base_tiles.get_tile(5, 16).convert_alpha(),
+                             self.base_tiles.get_tile(6, 16).convert_alpha(),
+                             self.base_tiles.get_tile(7, 16).convert_alpha(),
+                             self.base_tiles.get_tile(8, 16).convert_alpha(),
+                             self.base_tiles.get_tile(9, 16).convert_alpha(),
+                             self.base_tiles.get_tile(10, 16).convert_alpha(),
+                             self.base_tiles.get_tile(11, 16).convert_alpha()],
+            'death': [self.base_tiles.get_tile(0, 20).convert_alpha(), self.base_tiles.get_tile(1, 20).convert_alpha(),
+                      self.base_tiles.get_tile(2, 20).convert_alpha(), self.base_tiles.get_tile(3, 20).convert_alpha(),
+                      self.base_tiles.get_tile(4, 20).convert_alpha(), self.base_tiles.get_tile(5, 20).convert_alpha()],
             'up_axe': [self.axe_tiles.get_tile(0, 9).convert_alpha(),
-                   self.axe_tiles.get_tile(1, 9).convert_alpha(),
-                   self.axe_tiles.get_tile(2, 9).convert_alpha(),
-                   self.axe_tiles.get_tile(3, 9).convert_alpha(),
-                   self.axe_tiles.get_tile(4, 9).convert_alpha(),
-                   self.axe_tiles.get_tile(5, 9).convert_alpha(),
-                   self.axe_tiles.get_tile(6, 9).convert_alpha(),
-                   self.axe_tiles.get_tile(7, 9).convert_alpha(),
-                   self.axe_tiles.get_tile(8, 9).convert_alpha(),
-                   self.axe_tiles.get_tile(9, 9).convert_alpha(),
-                   self.axe_tiles.get_tile(10, 9).convert_alpha()],
+                       self.axe_tiles.get_tile(1, 9).convert_alpha(),
+                       self.axe_tiles.get_tile(2, 9).convert_alpha(),
+                       self.axe_tiles.get_tile(3, 9).convert_alpha(),
+                       self.axe_tiles.get_tile(4, 9).convert_alpha(),
+                       self.axe_tiles.get_tile(5, 9).convert_alpha(),
+                       self.axe_tiles.get_tile(6, 9).convert_alpha(),
+                       self.axe_tiles.get_tile(7, 9).convert_alpha(),
+                       self.axe_tiles.get_tile(8, 9).convert_alpha(),
+                       self.axe_tiles.get_tile(9, 9).convert_alpha(),
+                       self.axe_tiles.get_tile(10, 9).convert_alpha()],
             'left_axe': [self.axe_tiles.get_tile(0, 10).convert_alpha(),
-                   self.axe_tiles.get_tile(1, 10).convert_alpha(),
-                   self.axe_tiles.get_tile(2, 10).convert_alpha(),
-                   self.axe_tiles.get_tile(3, 10).convert_alpha(),
-                   self.axe_tiles.get_tile(4, 10).convert_alpha(),
-                   self.axe_tiles.get_tile(5, 10).convert_alpha(),
-                   self.axe_tiles.get_tile(6, 10).convert_alpha(),
-                   self.axe_tiles.get_tile(7, 10).convert_alpha(),
-                   self.axe_tiles.get_tile(8, 10).convert_alpha(),
-                   self.axe_tiles.get_tile(9, 10).convert_alpha(),
-                   self.axe_tiles.get_tile(10, 10).convert_alpha()],
+                         self.axe_tiles.get_tile(1, 10).convert_alpha(),
+                         self.axe_tiles.get_tile(2, 10).convert_alpha(),
+                         self.axe_tiles.get_tile(3, 10).convert_alpha(),
+                         self.axe_tiles.get_tile(4, 10).convert_alpha(),
+                         self.axe_tiles.get_tile(5, 10).convert_alpha(),
+                         self.axe_tiles.get_tile(6, 10).convert_alpha(),
+                         self.axe_tiles.get_tile(7, 10).convert_alpha(),
+                         self.axe_tiles.get_tile(8, 10).convert_alpha(),
+                         self.axe_tiles.get_tile(9, 10).convert_alpha(),
+                         self.axe_tiles.get_tile(10, 10).convert_alpha()],
             'down_axe': [self.axe_tiles.get_tile(0, 11).convert_alpha(),
-                   self.axe_tiles.get_tile(1, 11).convert_alpha(),
-                   self.axe_tiles.get_tile(2, 11).convert_alpha(),
-                   self.axe_tiles.get_tile(3, 11).convert_alpha(),
-                   self.axe_tiles.get_tile(4, 11).convert_alpha(),
-                   self.axe_tiles.get_tile(5, 11).convert_alpha(),
-                   self.axe_tiles.get_tile(6, 11).convert_alpha(),
-                   self.axe_tiles.get_tile(7, 11).convert_alpha(),
-                   self.axe_tiles.get_tile(8, 11).convert_alpha(),
-                   self.axe_tiles.get_tile(9, 11).convert_alpha(),
-                   self.axe_tiles.get_tile(10, 11).convert_alpha()],
+                         self.axe_tiles.get_tile(1, 11).convert_alpha(),
+                         self.axe_tiles.get_tile(2, 11).convert_alpha(),
+                         self.axe_tiles.get_tile(3, 11).convert_alpha(),
+                         self.axe_tiles.get_tile(4, 11).convert_alpha(),
+                         self.axe_tiles.get_tile(5, 11).convert_alpha(),
+                         self.axe_tiles.get_tile(6, 11).convert_alpha(),
+                         self.axe_tiles.get_tile(7, 11).convert_alpha(),
+                         self.axe_tiles.get_tile(8, 11).convert_alpha(),
+                         self.axe_tiles.get_tile(9, 11).convert_alpha(),
+                         self.axe_tiles.get_tile(10, 11).convert_alpha()],
             'right_axe': [self.axe_tiles.get_tile(0, 12).convert_alpha(),
-                   self.axe_tiles.get_tile(1, 12).convert_alpha(),
-                   self.axe_tiles.get_tile(2, 12).convert_alpha(),
-                   self.axe_tiles.get_tile(3, 12).convert_alpha(),
-                   self.axe_tiles.get_tile(4, 12).convert_alpha(),
-                   self.axe_tiles.get_tile(5, 12).convert_alpha(),
-                   self.axe_tiles.get_tile(6, 12).convert_alpha(),
-                   self.axe_tiles.get_tile(7, 12).convert_alpha(),
-                   self.axe_tiles.get_tile(8, 12).convert_alpha(),
-                   self.axe_tiles.get_tile(9, 12).convert_alpha(),
-                   self.axe_tiles.get_tile(10, 12).convert_alpha()],
+                          self.axe_tiles.get_tile(1, 12).convert_alpha(),
+                          self.axe_tiles.get_tile(2, 12).convert_alpha(),
+                          self.axe_tiles.get_tile(3, 12).convert_alpha(),
+                          self.axe_tiles.get_tile(4, 12).convert_alpha(),
+                          self.axe_tiles.get_tile(5, 12).convert_alpha(),
+                          self.axe_tiles.get_tile(6, 12).convert_alpha(),
+                          self.axe_tiles.get_tile(7, 12).convert_alpha(),
+                          self.axe_tiles.get_tile(8, 12).convert_alpha(),
+                          self.axe_tiles.get_tile(9, 12).convert_alpha(),
+                          self.axe_tiles.get_tile(10, 12).convert_alpha()],
             'up_pickaxe': [self.pickaxe_tiles.get_tile(0, 9).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(1, 9).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(2, 9).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(3, 9).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(4, 9).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(5, 9).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(6, 9).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(7, 9).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(8, 9).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(9, 9).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(10, 9).convert_alpha()],
+                           self.pickaxe_tiles.get_tile(1, 9).convert_alpha(),
+                           self.pickaxe_tiles.get_tile(2, 9).convert_alpha(),
+                           self.pickaxe_tiles.get_tile(3, 9).convert_alpha(),
+                           self.pickaxe_tiles.get_tile(4, 9).convert_alpha(),
+                           self.pickaxe_tiles.get_tile(5, 9).convert_alpha(),
+                           self.pickaxe_tiles.get_tile(6, 9).convert_alpha(),
+                           self.pickaxe_tiles.get_tile(7, 9).convert_alpha(),
+                           self.pickaxe_tiles.get_tile(8, 9).convert_alpha(),
+                           self.pickaxe_tiles.get_tile(9, 9).convert_alpha(),
+                           self.pickaxe_tiles.get_tile(10, 9).convert_alpha()],
             'left_pickaxe': [self.pickaxe_tiles.get_tile(0, 10).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(1, 10).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(2, 10).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(3, 10).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(4, 10).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(5, 10).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(6, 10).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(7, 10).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(8, 10).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(9, 10).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(10, 10).convert_alpha()],
+                             self.pickaxe_tiles.get_tile(1, 10).convert_alpha(),
+                             self.pickaxe_tiles.get_tile(2, 10).convert_alpha(),
+                             self.pickaxe_tiles.get_tile(3, 10).convert_alpha(),
+                             self.pickaxe_tiles.get_tile(4, 10).convert_alpha(),
+                             self.pickaxe_tiles.get_tile(5, 10).convert_alpha(),
+                             self.pickaxe_tiles.get_tile(6, 10).convert_alpha(),
+                             self.pickaxe_tiles.get_tile(7, 10).convert_alpha(),
+                             self.pickaxe_tiles.get_tile(8, 10).convert_alpha(),
+                             self.pickaxe_tiles.get_tile(9, 10).convert_alpha(),
+                             self.pickaxe_tiles.get_tile(10, 10).convert_alpha()],
             'down_pickaxe': [self.pickaxe_tiles.get_tile(0, 11).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(1, 11).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(2, 11).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(3, 11).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(4, 11).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(5, 11).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(6, 11).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(7, 11).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(8, 11).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(9, 11).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(10, 11).convert_alpha()],
+                             self.pickaxe_tiles.get_tile(1, 11).convert_alpha(),
+                             self.pickaxe_tiles.get_tile(2, 11).convert_alpha(),
+                             self.pickaxe_tiles.get_tile(3, 11).convert_alpha(),
+                             self.pickaxe_tiles.get_tile(4, 11).convert_alpha(),
+                             self.pickaxe_tiles.get_tile(5, 11).convert_alpha(),
+                             self.pickaxe_tiles.get_tile(6, 11).convert_alpha(),
+                             self.pickaxe_tiles.get_tile(7, 11).convert_alpha(),
+                             self.pickaxe_tiles.get_tile(8, 11).convert_alpha(),
+                             self.pickaxe_tiles.get_tile(9, 11).convert_alpha(),
+                             self.pickaxe_tiles.get_tile(10, 11).convert_alpha()],
             'right_pickaxe': [self.pickaxe_tiles.get_tile(0, 12).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(1, 12).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(2, 12).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(3, 12).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(4, 12).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(5, 12).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(6, 12).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(7, 12).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(8, 12).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(9, 12).convert_alpha(),
-                   self.pickaxe_tiles.get_tile(10, 12).convert_alpha()],
+                              self.pickaxe_tiles.get_tile(1, 12).convert_alpha(),
+                              self.pickaxe_tiles.get_tile(2, 12).convert_alpha(),
+                              self.pickaxe_tiles.get_tile(3, 12).convert_alpha(),
+                              self.pickaxe_tiles.get_tile(4, 12).convert_alpha(),
+                              self.pickaxe_tiles.get_tile(5, 12).convert_alpha(),
+                              self.pickaxe_tiles.get_tile(6, 12).convert_alpha(),
+                              self.pickaxe_tiles.get_tile(7, 12).convert_alpha(),
+                              self.pickaxe_tiles.get_tile(8, 12).convert_alpha(),
+                              self.pickaxe_tiles.get_tile(9, 12).convert_alpha(),
+                              self.pickaxe_tiles.get_tile(10, 12).convert_alpha()],
             'up_hoe': [self.shovel_tiles.get_tile(0, 9).convert_alpha(),
-                   self.shovel_tiles.get_tile(1, 9).convert_alpha(),
-                   self.shovel_tiles.get_tile(2, 9).convert_alpha(),
-                   self.shovel_tiles.get_tile(3, 9).convert_alpha(),
-                   self.shovel_tiles.get_tile(4, 9).convert_alpha(),
-                   self.shovel_tiles.get_tile(5, 9).convert_alpha(),
-                   self.shovel_tiles.get_tile(6, 9).convert_alpha(),
-                   self.shovel_tiles.get_tile(7, 9).convert_alpha(),
-                   self.shovel_tiles.get_tile(8, 9).convert_alpha(),
-                   self.shovel_tiles.get_tile(9, 9).convert_alpha(),
-                   self.shovel_tiles.get_tile(10, 9).convert_alpha()],
+                       self.shovel_tiles.get_tile(1, 9).convert_alpha(),
+                       self.shovel_tiles.get_tile(2, 9).convert_alpha(),
+                       self.shovel_tiles.get_tile(3, 9).convert_alpha(),
+                       self.shovel_tiles.get_tile(4, 9).convert_alpha(),
+                       self.shovel_tiles.get_tile(5, 9).convert_alpha(),
+                       self.shovel_tiles.get_tile(6, 9).convert_alpha(),
+                       self.shovel_tiles.get_tile(7, 9).convert_alpha(),
+                       self.shovel_tiles.get_tile(8, 9).convert_alpha(),
+                       self.shovel_tiles.get_tile(9, 9).convert_alpha(),
+                       self.shovel_tiles.get_tile(10, 9).convert_alpha()],
             'left_hoe': [self.shovel_tiles.get_tile(0, 10).convert_alpha(),
-                   self.shovel_tiles.get_tile(1, 10).convert_alpha(),
-                   self.shovel_tiles.get_tile(2, 10).convert_alpha(),
-                   self.shovel_tiles.get_tile(3, 10).convert_alpha(),
-                   self.shovel_tiles.get_tile(4, 10).convert_alpha(),
-                   self.shovel_tiles.get_tile(5, 10).convert_alpha(),
-                   self.shovel_tiles.get_tile(6, 10).convert_alpha(),
-                   self.shovel_tiles.get_tile(7, 10).convert_alpha(),
-                   self.shovel_tiles.get_tile(8, 10).convert_alpha(),
-                   self.shovel_tiles.get_tile(9, 10).convert_alpha(),
-                   self.shovel_tiles.get_tile(10, 10).convert_alpha()],
+                         self.shovel_tiles.get_tile(1, 10).convert_alpha(),
+                         self.shovel_tiles.get_tile(2, 10).convert_alpha(),
+                         self.shovel_tiles.get_tile(3, 10).convert_alpha(),
+                         self.shovel_tiles.get_tile(4, 10).convert_alpha(),
+                         self.shovel_tiles.get_tile(5, 10).convert_alpha(),
+                         self.shovel_tiles.get_tile(6, 10).convert_alpha(),
+                         self.shovel_tiles.get_tile(7, 10).convert_alpha(),
+                         self.shovel_tiles.get_tile(8, 10).convert_alpha(),
+                         self.shovel_tiles.get_tile(9, 10).convert_alpha(),
+                         self.shovel_tiles.get_tile(10, 10).convert_alpha()],
             'down_hoe': [self.shovel_tiles.get_tile(0, 11).convert_alpha(),
-                   self.shovel_tiles.get_tile(1, 11).convert_alpha(),
-                   self.shovel_tiles.get_tile(2, 11).convert_alpha(),
-                   self.shovel_tiles.get_tile(3, 11).convert_alpha(),
-                   self.shovel_tiles.get_tile(4, 11).convert_alpha(),
-                   self.shovel_tiles.get_tile(5, 11).convert_alpha(),
-                   self.shovel_tiles.get_tile(6, 11).convert_alpha(),
-                   self.shovel_tiles.get_tile(7, 11).convert_alpha(),
-                   self.shovel_tiles.get_tile(8, 11).convert_alpha(),
-                   self.shovel_tiles.get_tile(9, 11).convert_alpha(),
-                   self.shovel_tiles.get_tile(10, 11).convert_alpha()],
+                         self.shovel_tiles.get_tile(1, 11).convert_alpha(),
+                         self.shovel_tiles.get_tile(2, 11).convert_alpha(),
+                         self.shovel_tiles.get_tile(3, 11).convert_alpha(),
+                         self.shovel_tiles.get_tile(4, 11).convert_alpha(),
+                         self.shovel_tiles.get_tile(5, 11).convert_alpha(),
+                         self.shovel_tiles.get_tile(6, 11).convert_alpha(),
+                         self.shovel_tiles.get_tile(7, 11).convert_alpha(),
+                         self.shovel_tiles.get_tile(8, 11).convert_alpha(),
+                         self.shovel_tiles.get_tile(9, 11).convert_alpha(),
+                         self.shovel_tiles.get_tile(10, 11).convert_alpha()],
             'right_hoe': [self.shovel_tiles.get_tile(0, 12).convert_alpha(),
-                   self.shovel_tiles.get_tile(1, 12).convert_alpha(),
-                   self.shovel_tiles.get_tile(2, 12).convert_alpha(),
-                   self.shovel_tiles.get_tile(3, 12).convert_alpha(),
-                   self.shovel_tiles.get_tile(4, 12).convert_alpha(),
-                   self.shovel_tiles.get_tile(5, 12).convert_alpha(),
-                   self.shovel_tiles.get_tile(6, 12).convert_alpha(),
-                   self.shovel_tiles.get_tile(7, 12).convert_alpha(),
-                   self.shovel_tiles.get_tile(8, 12).convert_alpha(),
-                   self.shovel_tiles.get_tile(9, 12).convert_alpha(),
-                   self.shovel_tiles.get_tile(10, 12).convert_alpha()],
+                          self.shovel_tiles.get_tile(1, 12).convert_alpha(),
+                          self.shovel_tiles.get_tile(2, 12).convert_alpha(),
+                          self.shovel_tiles.get_tile(3, 12).convert_alpha(),
+                          self.shovel_tiles.get_tile(4, 12).convert_alpha(),
+                          self.shovel_tiles.get_tile(5, 12).convert_alpha(),
+                          self.shovel_tiles.get_tile(6, 12).convert_alpha(),
+                          self.shovel_tiles.get_tile(7, 12).convert_alpha(),
+                          self.shovel_tiles.get_tile(8, 12).convert_alpha(),
+                          self.shovel_tiles.get_tile(9, 12).convert_alpha(),
+                          self.shovel_tiles.get_tile(10, 12).convert_alpha()],
             'up_water': [self.water_tiles.get_tile(0, 9).convert_alpha(),
-                   self.water_tiles.get_tile(1, 9).convert_alpha(),
-                   self.water_tiles.get_tile(2, 9).convert_alpha(),
-                   self.water_tiles.get_tile(3, 9).convert_alpha(),
-                   self.water_tiles.get_tile(4, 9).convert_alpha(),
-                   self.water_tiles.get_tile(5, 9).convert_alpha(),
-                   self.water_tiles.get_tile(6, 9).convert_alpha(),
-                   self.water_tiles.get_tile(7, 9).convert_alpha(),
-                   self.water_tiles.get_tile(8, 9).convert_alpha(),
-                   self.water_tiles.get_tile(9, 9).convert_alpha(),
-                   self.water_tiles.get_tile(10, 9).convert_alpha()],
+                         self.water_tiles.get_tile(1, 9).convert_alpha(),
+                         self.water_tiles.get_tile(2, 9).convert_alpha(),
+                         self.water_tiles.get_tile(3, 9).convert_alpha(),
+                         self.water_tiles.get_tile(4, 9).convert_alpha(),
+                         self.water_tiles.get_tile(5, 9).convert_alpha(),
+                         self.water_tiles.get_tile(6, 9).convert_alpha(),
+                         self.water_tiles.get_tile(7, 9).convert_alpha(),
+                         self.water_tiles.get_tile(8, 9).convert_alpha(),
+                         self.water_tiles.get_tile(9, 9).convert_alpha(),
+                         self.water_tiles.get_tile(10, 9).convert_alpha()],
             'left_water': [self.water_tiles.get_tile(0, 10).convert_alpha(),
-                   self.water_tiles.get_tile(1, 10).convert_alpha(),
-                   self.water_tiles.get_tile(2, 10).convert_alpha(),
-                   self.water_tiles.get_tile(3, 10).convert_alpha(),
-                   self.water_tiles.get_tile(4, 10).convert_alpha(),
-                   self.water_tiles.get_tile(5, 10).convert_alpha(),
-                   self.water_tiles.get_tile(6, 10).convert_alpha(),
-                   self.water_tiles.get_tile(7, 10).convert_alpha(),
-                   self.water_tiles.get_tile(8, 10).convert_alpha(),
-                   self.water_tiles.get_tile(9, 10).convert_alpha(),
-                   self.water_tiles.get_tile(10, 10).convert_alpha()],
+                           self.water_tiles.get_tile(1, 10).convert_alpha(),
+                           self.water_tiles.get_tile(2, 10).convert_alpha(),
+                           self.water_tiles.get_tile(3, 10).convert_alpha(),
+                           self.water_tiles.get_tile(4, 10).convert_alpha(),
+                           self.water_tiles.get_tile(5, 10).convert_alpha(),
+                           self.water_tiles.get_tile(6, 10).convert_alpha(),
+                           self.water_tiles.get_tile(7, 10).convert_alpha(),
+                           self.water_tiles.get_tile(8, 10).convert_alpha(),
+                           self.water_tiles.get_tile(9, 10).convert_alpha(),
+                           self.water_tiles.get_tile(10, 10).convert_alpha()],
             'down_water': [self.water_tiles.get_tile(0, 11).convert_alpha(),
-                   self.water_tiles.get_tile(1, 11).convert_alpha(),
-                   self.water_tiles.get_tile(2, 11).convert_alpha(),
-                   self.water_tiles.get_tile(3, 11).convert_alpha(),
-                   self.water_tiles.get_tile(4, 11).convert_alpha(),
-                   self.water_tiles.get_tile(5, 11).convert_alpha(),
-                   self.water_tiles.get_tile(6, 11).convert_alpha(),
-                   self.water_tiles.get_tile(7, 11).convert_alpha(),
-                   self.water_tiles.get_tile(8, 11).convert_alpha(),
-                   self.water_tiles.get_tile(9, 11).convert_alpha(),
-                   self.water_tiles.get_tile(10, 11).convert_alpha()],
+                           self.water_tiles.get_tile(1, 11).convert_alpha(),
+                           self.water_tiles.get_tile(2, 11).convert_alpha(),
+                           self.water_tiles.get_tile(3, 11).convert_alpha(),
+                           self.water_tiles.get_tile(4, 11).convert_alpha(),
+                           self.water_tiles.get_tile(5, 11).convert_alpha(),
+                           self.water_tiles.get_tile(6, 11).convert_alpha(),
+                           self.water_tiles.get_tile(7, 11).convert_alpha(),
+                           self.water_tiles.get_tile(8, 11).convert_alpha(),
+                           self.water_tiles.get_tile(9, 11).convert_alpha(),
+                           self.water_tiles.get_tile(10, 11).convert_alpha()],
             'right_water': [self.water_tiles.get_tile(0, 12).convert_alpha(),
-                   self.water_tiles.get_tile(1, 12).convert_alpha(),
-                   self.water_tiles.get_tile(2, 12).convert_alpha(),
-                   self.water_tiles.get_tile(3, 12).convert_alpha(),
-                   self.water_tiles.get_tile(4, 12).convert_alpha(),
-                   self.water_tiles.get_tile(5, 12).convert_alpha(),
-                   self.water_tiles.get_tile(6, 12).convert_alpha(),
-                   self.water_tiles.get_tile(7, 12).convert_alpha(),
-                   self.water_tiles.get_tile(8, 12).convert_alpha(),
-                   self.water_tiles.get_tile(9, 12).convert_alpha(),
-                   self.water_tiles.get_tile(10, 12).convert_alpha()],
+                            self.water_tiles.get_tile(1, 12).convert_alpha(),
+                            self.water_tiles.get_tile(2, 12).convert_alpha(),
+                            self.water_tiles.get_tile(3, 12).convert_alpha(),
+                            self.water_tiles.get_tile(4, 12).convert_alpha(),
+                            self.water_tiles.get_tile(5, 12).convert_alpha(),
+                            self.water_tiles.get_tile(6, 12).convert_alpha(),
+                            self.water_tiles.get_tile(7, 12).convert_alpha(),
+                            self.water_tiles.get_tile(8, 12).convert_alpha(),
+                            self.water_tiles.get_tile(9, 12).convert_alpha(),
+                            self.water_tiles.get_tile(10, 12).convert_alpha()],
 
         }
 
@@ -321,7 +321,7 @@ class Player(pygame.sprite.Sprite):
         self.tools = ['hoe', 'axe', 'water', 'pickaxe']
         self.tool_index = 0
         self.selected_tool = self.tools[self.tool_index]
-        self.inventory = Inventory(self, self.game)
+        self.inventory = Inventory(self, self.game_manager)
 
     def use_tool(self):
         if self.selected_tool == 'axe':
@@ -330,7 +330,7 @@ class Player(pygame.sprite.Sprite):
                     tree.damage()
         if self.selected_tool == 'hoe':
             self.soil_layer.till_soil(self.target_pos)
-            if self.game.raining:
+            if self.game_manager.raining:
                 self.soil_layer.water_all()
         if self.selected_tool == 'water':
             self.soil_layer.water_soil(self.target_pos)
@@ -342,16 +342,17 @@ class Player(pygame.sprite.Sprite):
                 self.inventory.slots['hotbar'][str(self.selected_hotbar)]['item'] = None
             for i in range(1, 28):
                 if self.inventory.slots['inventory'][str(i)]['item']:
-                    if self.inventory.slots['inventory'][str(i)]['item'].name == seed_item.name and self.inventory.slots['inventory'][str(i)]['item'].item_type == 'seeds':
+                    if self.inventory.slots['inventory'][str(i)]['item'].name == seed_item.name and \
+                            self.inventory.slots['inventory'][str(i)]['item'].item_type == 'seeds':
                         self.inventory.slots['inventory'][str(i)]['amount'] -= 1
                         if self.inventory.slots['inventory'][str(i)]['amount'] == 0:
                             self.inventory.slots['inventory'][str(i)]['item'] = None
+
     def animate(self, dt):
         self.frame_index += 4 * dt
         if self.frame_index >= len(self.animations[self.status]):
             self.frame_index = 0
         self.image = pygame.transform.scale(self.animations[self.status][int(self.frame_index)], (80, 80))
-
 
     def input(self, actions):
         if not self.timers['tool use'].active and not self.timers['seed use'].active:
@@ -361,7 +362,7 @@ class Player(pygame.sprite.Sprite):
                     self.display_inventory = True
                 else:
                     self.display_inventory = False
-                    self.game.paused = False
+                    self.game_manager.paused = False
             if not self.display_inventory:
                 if actions['move up']:
                     self.status = 'up'
@@ -410,6 +411,7 @@ class Player(pygame.sprite.Sprite):
                             self.use_seed(self.inventory.slots['hotbar'][str(self.selected_hotbar)]['item'])
 
                 if actions['left'] and not self.timers['switch item'].active:
+                    print("left")
                     self.timers['switch item'].activate()
                     self.tool_index -= 1
                     if self.tool_index < 0:
@@ -425,9 +427,10 @@ class Player(pygame.sprite.Sprite):
 
     def toggle_inventory(self):
         if self.display_inventory:
-            self.game.paused = True
-            self.inventory.render(self.game.game_manager.screen)
-            self.inventory.update(self.game.game_manager.dt, self.game.game_manager.actions)
+            self.game_manager.paused = True
+            self.inventory.render(self.game_manager.screen)
+            self.inventory.update(self.game_manager.dt, self.game_manager.actions)
+
     def get_status(self):
         if self.direction.magnitude() == 0:
             self.status = self.status.split('_')[0] + "_idle"
@@ -483,7 +486,7 @@ class Player(pygame.sprite.Sprite):
         self.target_pos = self.rect.center + config.PLAYER_TOOL_OFFSET[self.status.split('_')[0]]
 
     def update(self, dt):
-        self.input(self.game.game_manager.actions)
+        self.input(self.game_manager.actions)
         self.toggle_inventory()
         self.get_status()
         self.update_timers()
@@ -494,19 +497,19 @@ class Player(pygame.sprite.Sprite):
             self.transition()
 
     def transition(self):
-        self.game.day += 1
-        self.game.day_index += 1
-        if self.game.day_index == 7:
-            self.game.day_index = 0
-        if self.game.day == 29:
-            self.game.day = 1
-            self.game.season_index += 1
-            if self.game.season_index == 4:
-                self.game.year += 1
-                self.game.season_index = 0
+        self.game_manager.day += 1
+        self.game_manager.day_index += 1
+        if self.game_manager.day_index == 7:
+            self.game_manager.day_index = 0
+        if self.game_manager.day == 29:
+            self.game_manager.day = 1
+            self.game_manager.season_index += 1
+            if self.game_manager.season_index == 4:
+                self.game_manager.year += 1
+                self.game_manager.season_index = 0
         self.sleep = False
         self.soil_layer.update_plants()
         self.soil_layer.remove_water()
-        self.game.raining = randint(0, 10) > 3
-        new_state = Transition(self.game.game_manager, "Transition")
+        self.game_manager.raining = randint(0, 10) > 3
+        new_state = Transition(self.game_manager, "Transition")
         new_state.enter_state()

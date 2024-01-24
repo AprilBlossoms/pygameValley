@@ -18,7 +18,7 @@ class Farmhouse(State):
         self.setup()
 
     def setup(self):
-        map_data = pytmx.load_pygame(r'C:\Users\AprilMay\Documents\Tiled Maps\farmhouse_base.tmx')
+        map_data = pytmx.load_pygame(r'C:\Users\april\OneDrive\Documents\Tiled Maps\farmhouse_base.tmx')
         for x, y, surf in map_data.get_layer_by_name("Ground").tiles():
             transformed_surf = pygame.transform.scale(surf, (36, 36))
             Generic((x*36, y*36), transformed_surf, self.all_sprites, FARMHOUSE_LAYERS['ground'])
@@ -43,7 +43,7 @@ class Farmhouse(State):
                 Interaction((489, 763), (obj.width*2, obj.height*2), self.interaction_sprites, obj.name)
 
             if obj.name == "Farmhouse Start":
-                self.player = Player((688, 1016), self.game_manager.game, self.all_sprites, self.collision_sprites, None, self.interaction_sprites, self.game_manager.game.zone, self.game_manager.state_stack[-1].soil_layer)
+                self.player = Player((688, 1016), self.game_manager, self.all_sprites, self.collision_sprites, None, self.interaction_sprites, self.game_manager.zone, self.game_manager.state_stack[-1].soil_layer)
                 self.player.inventory = self.inventory
 
     def update(self, dt, actions):

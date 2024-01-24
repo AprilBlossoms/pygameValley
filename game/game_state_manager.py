@@ -1,7 +1,12 @@
+from random import randint
+
 import pygame
 
 from game import config
+from game.overlay.overlay import Overlay
 from game.sprites.cursor import Cursor
+from game.states.farmhouse import Farmhouse
+from game.states.pause.inventory_item import InventoryItem
 from game.states.title import Title
 
 
@@ -19,12 +24,28 @@ class GameStateManager:
         self.game_cursor = Cursor(self, self.cursor_group)
         self.game_cursor.rect.center = pygame.mouse.get_pos()
         self.dt = 0
+        self.overlay = None
 
         self.actions = {'left': False, 'right': False, 'up': False, 'down': False, 'move left': False,
                         'move right': False, 'move up': False, 'move down': False, 'enter': False, 'left mouse': False,
                         'right mouse': False, 'inventory': False, 'escape': False, 'map': False, 'crafting': False,
                         'tab': False, 'hotbar left': False, 'hotbar right': False, 'back': False}
 
+        self.raining = randint(0, 10) > 3
+        self.minute_timer = 0
+        self.hour = 7
+        self.minute = 0
+        self.year = 1
+        self.seasons = ['Spring', 'Summer', 'Autumn', 'Winter']
+        self.season_index = 0
+        self.days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+        self.days_full = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+        self.day_index = 0
+        self.day = 1
+        self.paused = False
+
+    def create_overlay(self):
+        self.overlay = Overlay(self.player)
 
     def load_states(self):
         self.title = Title(self, "Title")
@@ -38,6 +59,7 @@ class GameStateManager:
         self.screen.blit(pygame.transform.scale(self.screen, (config.SCREEN_WIDTH, config.SCREEN_HEIGHT)), (0, 0))
         self.screen.blit(self.game_cursor.image, self.game_cursor.rect)
         pygame.display.flip()
+
     def check_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -142,5 +164,45 @@ class GameStateManager:
             self.cursor_group.draw(self.screen)
             self.game_cursor.update()
         while self.playing:
-            self.game.game_loop()
+            if not self.overlay:
+                self.create_overlay()
+            self.dt = self.clock.tick(60) / 1000
+            self.update_time(self.dt)
+            self.check_events()
+            self.render()
+            self.update()
+            self.game_cursor.update()
+            self.overlay.display(self.screen)
 
+    def update_time(self, dt):
+        if not self.paused:
+            self.minute_timer += dt
+            if self.minute_timer > 7:
+                if self.minute < 5:
+                    self.minute += 1
+                else:
+                    self.hour += 1
+                    self.minute = 0
+                self.minute_timer = 0
+
+
+    def player_add(self, type, item, img, amount):
+        already_added = False
+        for i in range(1, 28):
+            if self.player.inventory.slots['inventory'][str(i)]['item']:
+                if self.player.inventory.slots['inventory'][str(i)]['item'].name == item and self.player.inventory.slots['inventory'][str(i)]['item'].item_type == type:
+                    self.player.inventory.slots['inventory'][str(i)]['amount'] += amount
+                    already_added = True
+        for i in range(1, 10):
+            if self.player.inventory.slots['hotbar'][str(i)]['item']:
+                if self.player.inventory.slots['hotbar'][str(i)]['item'].name == item and self.player.inventory.slots['hotbar'][str(i)]['item'].item_type == type:
+                    self.player.inventory.slots['hotbar'][str(i)]['amount'] += amount
+        if not already_added:
+            self.player.inventory.add(InventoryItem(item, type, img), amount)
+
+    def zone(self, zone):
+        if zone == 'Farmhouse':
+            self.farmhouse = Farmhouse(self, "Farmhouse", self.player.inventory)
+            self.farmhouse.enter_state()
+        if zone == "Farm":
+            self.farmhouse.exit_state()

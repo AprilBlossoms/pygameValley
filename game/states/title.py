@@ -47,9 +47,8 @@ class Title(State, Menu):
         pos = pygame.mouse.get_pos()
         if actions['enter']:
             if self.index == 0:
-                game = Game(self.game_manager)
-                self.game_manager.game = game
                 self.game_manager.farm = Farm(self.game_manager, "Farm")
+                self.game_manager.player = self.game_manager.farm.player
                 self.game_manager.playing = True
                 self.game_manager.farm.enter_state()
             elif self.index == 1:
@@ -59,9 +58,8 @@ class Title(State, Menu):
                 self.game_manager.running, self.game_manager.playing = False, False
         if actions['left mouse']:
             if self.new_button.collidepoint(pos):
-                game = Game(self.game_manager)
-                self.game_manager.game = game
                 self.game_manager.farm = Farm(self.game_manager, "Farm")
+                self.game_manager.player = self.game_manager.farm.player
                 self.game_manager.playing = True
                 self.game_manager.farm.enter_state()
             if self.load_button.collidepoint(pos):

@@ -6,9 +6,9 @@ from game.support import Tilesheet
 
 
 class Inventory:
-    def __init__(self, player, game):
+    def __init__(self, player, game_manager):
         self.player = player
-        self.game = game
+        self.game_manager = game_manager
 
         self.seeds1 = Tilesheet("assets/items/seeds.png", 16, 16, 6, 7)
 
@@ -85,12 +85,12 @@ class Inventory:
         for i in range(1, 28):
             if self.slots['inventory'][str(i)]['item']:
                 surface.blit(self.slots['inventory'][str(i)]['item'].img, self.slots['inventory'][str(i)]['rect'])
-                self.game.game_manager.draw_text(surface, str(self.slots['inventory'][str(i)]['amount']), 30, config.BLACK, self.slots['inventory'][str(i)]['rect'].bottomright[0]-5, self.slots['inventory'][str(i)]['rect'].bottomright[1]-15)
+                self.game_manager.draw_text(surface, str(self.slots['inventory'][str(i)]['amount']), 30, config.BLACK, self.slots['inventory'][str(i)]['rect'].bottomright[0]-5, self.slots['inventory'][str(i)]['rect'].bottomright[1]-15)
         for i in range(1, 10):
             if self.slots['hotbar'][str(i)]['item']:
                 surface.blit(self.slots['hotbar'][str(i)]['item'].img, self.slots['hotbar'][str(i)]['rect'])
                 if i != 1:
-                    self.game.game_manager.draw_text(surface, str(self.slots['hotbar'][str(i)]['amount']), 30,
+                    self.game_manager.draw_text(surface, str(self.slots['hotbar'][str(i)]['amount']), 30,
                                                      config.BLACK,
                                                      self.slots['hotbar'][str(i)]['rect'].bottomright[0] - 10,
                                                      self.slots['hotbar'][str(i)]['rect'].bottomright[1] - 15)
@@ -151,8 +151,8 @@ class Inventory:
     def update(self, dt, actions):
         self.move_cursor(actions)
         self.update_hotbar()
-        self.game.game_manager.reset_keys()
-        self.render(self.game.game_manager.screen)
+        self.game_manager.reset_keys()
+        self.render(self.game_manager.screen)
 
     def add(self, item, amount):
         for i in range(1, 28):

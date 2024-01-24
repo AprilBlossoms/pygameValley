@@ -22,47 +22,20 @@ class Game:
         self.day_index = 0
         self.day = 1
         self.paused = False
+        self.overlay = Overlay(self.game_manager.player)
 
     def game_loop(self):
-        self.game_manager.dt = self.game_manager.clock.tick(30) / 1000
+        self.game_manager.dt = self.game_manager.clock.tick(60) / 1000
         self.update_time(self.game_manager.dt)
         self.game_manager.check_events()
         self.game_manager.render()
         self.game_manager.update()
         self.game_manager.game_cursor.update()
-        self.overlay = Overlay(self.player)
         self.overlay.display(self.game_manager.screen)
 
-    def update_time(self, dt):
-        if not self.paused:
-            self.minute_timer += dt
-            if self.minute_timer > 7:
-                if self.minute < 5:
-                    self.minute += 1
-                else:
-                    self.hour += 1
-                    self.minute = 0
-                self.minute_timer = 0
-
-    def player_add(self, type, item, img, amount):
-        already_added = False
-        for i in range(1, 28):
-            if self.player.inventory.slots['inventory'][str(i)]['item']:
-                if self.player.inventory.slots['inventory'][str(i)]['item'].name == item and self.player.inventory.slots['inventory'][str(i)]['item'].item_type == type:
-                    self.player.inventory.slots['inventory'][str(i)]['amount'] += amount
-                    already_added = True
-        for i in range(1, 10):
-            if self.player.inventory.slots['hotbar'][str(i)]['item']:
-                if self.player.inventory.slots['hotbar'][str(i)]['item'].name == item and self.player.inventory.slots['hotbar'][str(i)]['item'].item_type == type:
-                    self.player.inventory.slots['hotbar'][str(i)]['amount'] += amount
-        if not already_added:
-            self.player.inventory.add(InventoryItem(item, type, img), amount)
 
 
-    def zone(self, zone):
-        if zone == 'Farmhouse':
-            self.game_manager.farmhouse = Farmhouse(self.game_manager, "Farmhouse", self.player.inventory)
-            self.game_manager.farmhouse.enter_state()
-        if zone == "Farm":
-            self.game_manager.farmhouse.exit_state()
+
+
+
 
